@@ -6,11 +6,13 @@ Each instance holds one pin and controls this pin.
 The developer/user has to make sure, that there are no overlapping instances used...
 In addition some basic functionality tests are provide as stand-alone script.
 
-Classes: LED
-Functions: main, class_test
+Classes:
+    LED
+Functions:
+    main
+    class_test
 """
 import RPi.GPIO as GPIO
-import time
 
 GPIO.setmode(GPIO.BOARD)
 
@@ -23,7 +25,9 @@ class LED:
     Methods:
         __init__(pin, freq, is_inverse)
         __del__()
+        freq()
         set_freq(freq)
+        duty_cycle()
         set_duty_cycle(duty_cycle)
         set_on()
         set_off()
@@ -54,6 +58,13 @@ class LED:
         self._pwm.stop()
         GPIO.output(self._pin, GPIO.LOW)
 
+    def freq(self):
+        """
+        Function to get the current used frequency.
+
+        Returns: freq
+        """
+        return self._freq
     def set_freq(self, freq):
         """
         Function to set the frequency for the LED.
@@ -63,13 +74,15 @@ class LED:
         """ 
         self._freq = freq
         self._pwm.ChangeFrequency(freq)
-    def freq(self):
-        """
-        Function to get the current used frequency.
 
-        Returns: freq
+    def duty_cycle(self):
         """
-        return self._freq
+        Function to get the current used duty cycle (PWM; dimming).
+        Is an integer 0 <= duty_cycle <= 100.
+
+        Returns: duty_cycle
+        """
+        return self._duty_cycle
     def set_duty_cycle(self, duty_cycle):
         """
         Function to set the duty cycle (PWM; dimming) for the LED.
@@ -81,14 +94,6 @@ class LED:
         dc = min(100,max(duty_cycle,0))
         self._duty_cycle = dc if not self._is_inverse else 100 - dc
         self._pwm.ChangeDutyCycle(self._duty_cycle)
-    def duty_cycle(self):
-        """
-        Function to get the current used duty cycle (PWM; dimming).
-        Is an integer 0 <= duty_cycle <= 100.
-
-        Returns: duty_cycle
-        """
-        return self._duty_cycle
 
     def set_on(self):
         """
@@ -144,5 +149,7 @@ def class_test():
 if __name__ == "__main__":
     """
     A main function that is used, when this module is used as a stand-alone script.
+    Local imports in order not to disturb library import functionality (keeping it clean!)
     """
+    import time
     class_test()
